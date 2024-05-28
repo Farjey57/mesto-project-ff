@@ -22,6 +22,7 @@ function createCard (dataCard, deleteCard) {
     deleteButton.addEventListener('click', deleteCard);
     
     cardItem.querySelector('.card__image').src = dataCard.link;
+    cardItem.querySelector('.card__image').alt = dataCard.name;
     cardItem.querySelector('.card__title').textContent = dataCard.name;
 
     return cardItem;
