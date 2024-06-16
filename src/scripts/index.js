@@ -1,39 +1,71 @@
-// @todo: Темплейт карточки
-
-// @todo: DOM узлы
-
-// @todo: Функция создания карточки
-
-// @todo: Функция удаления карточки
-
-// @todo: Вывести карточки на страницу
+// мне совсем не нравится, но это работает
 import '../pages/index.css';
+import {initialCards} from './cards.js';
+import {createCard, deleteCard, onLike, showCard} from './card.js';
+import {openPopup, closePopup, clearModal} from './modal.js';
 
-const placesList = document.querySelector('.places__list')
+const placesList = document.querySelector('.places__list');
+const editButton = document.querySelector('.profile__edit-button');
+const profileAddButton = document.querySelector('.profile__add-button');
 
-function deleteCard(evt) {
-    const cardItem = evt.target.closest('.card');
-    cardItem.remove();
-};
+/* Модалки */
+const editPopup = document.querySelector('.popup_type_edit');
+const newCardPopup = document.querySelector('.popup_type_new-card');
+const imagePopup = document.querySelector('.popup_type_image');
 
-function createCard (dataCard, deleteCard) {
-    const cardTemplate = document.querySelector('#card-template').content;
-    const cardItem = cardTemplate.querySelector('.card').cloneNode(true);
-    const deleteButton = cardItem.querySelector('.card__delete-button');
+/* слушатель модалки edit */
+editButton.addEventListener('click', () => {
+  const formElement = document.forms['edit-profile'];
+  const nameForm = formElement.elements.name;
+  const descriptionForm = formElement.elements.description;
 
-    deleteButton.addEventListener('click', deleteCard);
+  const profileTitle = document.querySelector('.profile__title');
+  const profileDescription = document.querySelector('.profile__description');
+
+  nameForm.value = profileTitle.textContent;
+  descriptionForm.value = profileDescription.textContent;
+  openPopup(editPopup);
+
+  function handleFormSubmit(evt) {
+    evt.preventDefault();
+    profileTitle.textContent = nameForm.value;
+    profileDescription.textContent = descriptionForm.value;
+    clearModal(evt.target.closest('.popup'));
+  }
+
+  formElement.addEventListener('submit', handleFormSubmit);
+});
+
+profileAddButton.addEventListener('click', () => {
+  openPopup(newCardPopup);
+  const formElement = document.forms['new-place'];
+  formElement.reset()
+  formElement.removeEventListener('submit', handleFormSubmit);
+
+  function handleFormSubmit(evt) {
+    evt.preventDefault();
+    console.log('отправка')
+    const name = formElement.elements['place-name'].value;
+    const link = formElement.elements['link'].value;
+    const data = {
+      name,
+      link
+    }
     
-    cardItem.querySelector('.card__image').src = dataCard.link;
-    cardItem.querySelector('.card__image').alt = dataCard.name;
-    cardItem.querySelector('.card__title').textContent = dataCard.name;
+    placesList.prepend(createCard(data, deleteCard, onLike, showCard));
+    formElement.reset()
+    clearModal(evt.target.closest('.popup'));
+    formElement.removeEventListener('submit', handleFormSubmit);
+  };
 
-    return cardItem;
-}
+  formElement.addEventListener('submit', handleFormSubmit);
+});
 
-function createContent(dataCards, deleteCard) {
-    dataCards.forEach(element => {
-        placesList.append(createCard(element, deleteCard));
-    });
+function createContent(dataCards, deleteCard, onLike, showCard) {
+  dataCards.forEach(element => {
+      placesList.append(createCard(element, deleteCard, onLike, showCard));
+  });
 };
 
-createContent(initialCards, deleteCard)
+createContent(initialCards, deleteCard, onLike, showCard);
+
