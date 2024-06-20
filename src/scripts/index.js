@@ -1,4 +1,3 @@
-// мне совсем не нравится, но это работает
 import '../pages/index.css';
 import {initialCards} from './cards.js';
 import {createCard, deleteCard, onLike} from './card.js';
