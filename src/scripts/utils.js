@@ -1,8 +1,5 @@
 function keyHandler(key, item) {
-  if (key === item) {
-    return true;
-  }
-  return false;
+  return key === item;
 }
 
 export {keyHandler}

@@ -2,24 +2,27 @@ import {keyHandler} from './utils.js';
 
 function openPopup(popup) {
   popup.classList.add('popup_is-opened');
-  popup.addEventListener('click', closePopup);
-  document.addEventListener('keydown', closePopup);
+  popup.addEventListener('click', closePopupByOverlay);
+  document.addEventListener('keydown', closePopupByEsc);
 }
 
-function closePopup(evt) {
-  if(evt.target.classList.contains('popup') ||
-  evt.target.classList.contains('popup__close')) {
-    clearModal(evt.target.closest('.popup'))
-  }
-  if(keyHandler(evt.key, 'Escape')) {
-    clearModal(document.querySelector('.popup_is-opened'));
+function closePopupByOverlay(evt) {
+    if (evt.target.classList.contains('popup') || 
+    evt.target.classList.contains('popup__close')) { 
+    closePopup(evt.target.closest('.popup')) 
+  } 
+}
+
+function closePopupByEsc(evt) {
+  if(keyHandler(evt.key, 'Escape')) { 
+    closePopup(document.querySelector('.popup_is-opened')); 
   }
 }
 
-function clearModal(popup) {
+function closePopup(popup) {
   popup.classList.remove('popup_is-opened');
-  popup.removeEventListener('click', closePopup);
-  document.removeEventListener('keydown', closePopup);
+  popup.removeEventListener('click', closePopupByOverlay);
+  document.removeEventListener('keydown', closePopupByEsc);
 }
 
-export {openPopup, closePopup, clearModal}
+export {openPopup, closePopup}

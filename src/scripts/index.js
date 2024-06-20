@@ -1,71 +1,98 @@
 // мне совсем не нравится, но это работает
 import '../pages/index.css';
 import {initialCards} from './cards.js';
-import {createCard, deleteCard, onLike, showCard} from './card.js';
-import {openPopup, closePopup, clearModal} from './modal.js';
+import {createCard, deleteCard, onLike} from './card.js';
+import {openPopup, closePopup} from './modal.js';
 
 const placesList = document.querySelector('.places__list');
 const editButton = document.querySelector('.profile__edit-button');
 const profileAddButton = document.querySelector('.profile__add-button');
 
 /* Модалки */
+
 const editPopup = document.querySelector('.popup_type_edit');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
 
-/* слушатель модалки edit */
+/* Поля для работы с editPopup */
+
+const profileTitle = document.querySelector('.profile__title');
+const profileDescription = document.querySelector('.profile__description');
+
+/* Формы */
+
+const formEdit = document.forms['edit-profile'];
+const formNewCard = document.forms['new-place'];
+
+/* Поля форм */
+
+const nameFormEdit = formEdit.elements.name;
+const descriptionFormEdit = formEdit.elements.description;
+
+/* Обработчики открытия и submit модалки editPopup */
+
 editButton.addEventListener('click', () => {
-  const formElement = document.forms['edit-profile'];
-  const nameForm = formElement.elements.name;
-  const descriptionForm = formElement.elements.description;
+  nameFormEdit.value = profileTitle.textContent;
+  descriptionFormEdit.value = profileDescription.textContent;
 
-  const profileTitle = document.querySelector('.profile__title');
-  const profileDescription = document.querySelector('.profile__description');
-
-  nameForm.value = profileTitle.textContent;
-  descriptionForm.value = profileDescription.textContent;
   openPopup(editPopup);
-
-  function handleFormSubmit(evt) {
-    evt.preventDefault();
-    profileTitle.textContent = nameForm.value;
-    profileDescription.textContent = descriptionForm.value;
-    clearModal(evt.target.closest('.popup'));
-  }
-
-  formElement.addEventListener('submit', handleFormSubmit);
 });
+
+function handleformEditSubmit(evt) {
+  evt.preventDefault();
+
+  profileTitle.textContent = nameFormEdit.value;
+  profileDescription.textContent = descriptionFormEdit.value;
+  closePopup(editPopup);
+}
+
+formEdit.addEventListener('submit', handleformEditSubmit);
+
+/* Обработчики открытия и submit модалки newCardPopup */
 
 profileAddButton.addEventListener('click', () => {
   openPopup(newCardPopup);
-  const formElement = document.forms['new-place'];
-  formElement.reset()
-  formElement.removeEventListener('submit', handleFormSubmit);
-
-  function handleFormSubmit(evt) {
-    evt.preventDefault();
-    console.log('отправка')
-    const name = formElement.elements['place-name'].value;
-    const link = formElement.elements['link'].value;
-    const data = {
-      name,
-      link
-    }
-    
-    placesList.prepend(createCard(data, deleteCard, onLike, showCard));
-    formElement.reset()
-    clearModal(evt.target.closest('.popup'));
-    formElement.removeEventListener('submit', handleFormSubmit);
-  };
-
-  formElement.addEventListener('submit', handleFormSubmit);
 });
 
-function createContent(dataCards, deleteCard, onLike, showCard) {
+function handleNewCardSubmit(evt) {
+  evt.preventDefault();
+  const name = formNewCard.elements['place-name'].value;
+  const link = formNewCard.elements['link'].value;
+  const data = {
+    name,
+    link
+  };
+  placesList.prepend(createCard(data, deleteCard, onLike));
+  formNewCard.reset();
+  closePopup(newCardPopup);
+};
+
+formNewCard.addEventListener('submit', handleNewCardSubmit);
+
+/* Обработчик модалки imagePopup */
+
+function showCard(evt) { 
+  const clickItem = evt.target;
+  if (clickItem.classList.contains('card__image')) {
+    const popupImage = imagePopup.querySelector('.popup__image');
+    const popupCaption = imagePopup.querySelector('.popup__caption');
+
+    popupImage.src = clickItem.src;
+    popupImage.alt = clickItem.alt;
+    popupCaption.textContent = clickItem.offsetParent.querySelector('.card__title').textContent;
+    openPopup(imagePopup);
+  }
+}
+
+placesList.addEventListener('click', showCard)
+
+/* Формирование контента страницы */
+
+function createContent(dataCards, deleteCard, onLike) {
   dataCards.forEach(element => {
-      placesList.append(createCard(element, deleteCard, onLike, showCard));
+      placesList.append(createCard(element, deleteCard, onLike));
   });
 };
 
-createContent(initialCards, deleteCard, onLike, showCard);
+createContent(initialCards, deleteCard, onLike);
 

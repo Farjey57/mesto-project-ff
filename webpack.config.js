@@ -32,10 +32,19 @@ module.exports = {
         exclude: '/node_modules/'
       },
       // добавили правило для обработки файлов
+      { 
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
+        generator: {
+            filename: 'images/[name].[hash][ext]',
+        }
+      },
       {
-        // регулярное выражение, которое ищет все файлы с такими расширениями
-        test: /\.(png|svg|jpg|gif|woff(2)?|eot|ttf|otf)$/,
-        type: 'asset/resource'
+        test: /\.(woff(2)?|eot|ttf|otf)$/i,
+        type: 'asset/resource',
+        generator: {
+            filename: 'fonts/[name].[hash][ext]',
+        }
       },
       {
         // применять это правило только к CSS-файлам
@@ -47,8 +56,7 @@ module.exports = {
           // добавьте объект options Если вы используете директиву @import в css-файлах, после подключения postcss-loader, нужно изменить то, как подключается css-loader.
           options: { importLoaders: 1 }
         }, 'postcss-loader']
-      }
-    ]
+      }]
   },
   plugins: [
     new HtmlWebpackPlugin({
