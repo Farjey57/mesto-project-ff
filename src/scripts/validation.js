@@ -63,6 +63,7 @@ const enableValidation = (options) => {
 const clearValidation = (formElement, options) => {
   const inputList = Array.from(formElement.querySelectorAll(options.inputSelector));
   const buttonElement = formElement.querySelector(options.submitButtonSelector);
+  console.log(buttonElement)
   buttonElement.classList.add(options.inactiveButtonClass);
   inputList.forEach((inputElement) => {
     hideInputError(formElement, inputElement, options);

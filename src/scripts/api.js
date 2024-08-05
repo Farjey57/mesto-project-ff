@@ -6,29 +6,26 @@ const config = {
   }
 }
 
+const checkStatus = (res) => {
+  if (res.ok) {
+    return res.json();
+  }
+  // если ошибка, отклоняем промис
+  return Promise.reject(`Ошибка: ${res.status}`);
+}
+
 const getInitialCards = () => {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers
   })
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      // если ошибка, отклоняем промис
-      return Promise.reject(`Ошибка: ${res.status}`);
-    });
+    .then(checkStatus);
 } 
 
 const getUserData = () => {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
+  .then(checkStatus);
 }
 
 const patchUserData = (name, about) => {
@@ -40,12 +37,7 @@ const patchUserData = (name, about) => {
       'about': about
     })
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
+  .then(checkStatus);
 }
 
 const postNewCard = (name, link) => {
@@ -57,12 +49,7 @@ const postNewCard = (name, link) => {
       'link': link
     })
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
+  .then(checkStatus);
 }
 
 const deleteCardServer = (_id) => {
@@ -70,12 +57,7 @@ const deleteCardServer = (_id) => {
     method: 'DELETE',
     headers: config.headers
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
+  .then(checkStatus);
 }
 
 const putLikeCard = (_id) => {
@@ -83,12 +65,7 @@ const putLikeCard = (_id) => {
     method: 'PUT',
     headers: config.headers
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
+  .then(checkStatus);
 }
 
 const deleteLikeCard = (_id) => {
@@ -96,12 +73,7 @@ const deleteLikeCard = (_id) => {
     method: 'DELETE',
     headers: config.headers
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
+  .then(checkStatus);
 }
 
 const patchAvatr = (avatar) => {
@@ -112,12 +84,7 @@ const patchAvatr = (avatar) => {
       avatar
     })
   })
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  });
+  .then(checkStatus);
 }
 
 export { getInitialCards, getUserData, patchUserData, postNewCard, deleteCardServer, putLikeCard, deleteLikeCard, patchAvatr }

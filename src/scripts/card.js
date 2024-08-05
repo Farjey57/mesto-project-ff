@@ -1,28 +1,29 @@
 import { deleteCardServer, putLikeCard, deleteLikeCard } from './api.js';
 
-function deleteCard(evt) {
-  const cardItem = evt.target.closest('.card');
+function deleteCard(cardItem) {
   deleteCardServer(cardItem.id)
   cardItem.remove();
 };
 
-function onLike(evt) {
-  const element = evt.target;
-  const card = element.closest('.card');
-  const likeConter = card.querySelector('.card__like-conter');
-  
-  if (element.classList.value.includes('card__like-button_is-active')) {
-    deleteLikeCard(card.id)
+function onLike(likeConter, likeButton, dataCard) {
+  if (likeButton.classList.value.includes('card__like-button_is-active')) {
+    deleteLikeCard(dataCard._id)
     .then((res) => {
       likeConter.textContent = res.likes.length;
+      likeButton.classList.remove('card__like-button_is-active');
     })
-    element.classList.remove('card__like-button_is-active');
+    .catch((err) => {
+      console.log(err);
+    });
   } else {
-    putLikeCard(card.id)
+    putLikeCard(dataCard._id)
     .then((res) => {
       likeConter.textContent = res.likes.length;
+      likeButton.classList.add('card__like-button_is-active');
+    })
+    .catch((err) => {
+      console.log(err);
     });
-    element.classList.add('card__like-button_is-active');
   }
 }
 
@@ -36,7 +37,9 @@ function createCard(dataCard, deleteCard, onLike, userId) {
   if (dataCard.owner._id !== userId) {
     deleteButton.remove();
   } else {
-    deleteButton.addEventListener('click', deleteCard);
+    deleteButton.addEventListener('click', () => {
+      deleteCard(cardItem);
+    });
   }
 
   /* Ставим лайк при создании карточки, если мы когда-то лайкали эту карточку */
@@ -46,13 +49,19 @@ function createCard(dataCard, deleteCard, onLike, userId) {
     }
   });
 
-  likeButton.addEventListener('click', onLike);
-  
+  const likeConter = cardItem.querySelector('.card__like-conter');
+  const cardImage = cardItem.querySelector('.card__image');
+  const cardTitle = cardItem.querySelector('.card__title')
+
   cardItem.id = dataCard._id;
-  cardItem.querySelector('.card__image').src = dataCard.link;
-  cardItem.querySelector('.card__image').alt = dataCard.name;
-  cardItem.querySelector('.card__title').textContent = dataCard.name;
-  cardItem.querySelector('.card__like-conter').textContent = dataCard.likes.length;
+  cardImage.src = dataCard.link;
+  cardImage.alt = dataCard.name;
+  cardTitle.textContent = dataCard.name;
+  likeConter.textContent = dataCard.likes.length;
+
+  likeButton.addEventListener('click', () => {
+    onLike(likeConter, likeButton, dataCard)
+  });
 
   return cardItem;
 };

@@ -71,15 +71,17 @@ function handleformEditSubmit(evt) {
   const about = descriptionFormEdit.value;
   
   patchUserData(name, about)
+  .then(() => {
+    profileTitle.textContent = name;
+    profileDescription.textContent = about;
+    closePopup(editPopup);
+  })
   .catch((err) => {
     console.log(err);
   })
   .finally(() => {
     renderLoading(false, popupButon)
   });
-  profileTitle.textContent = name;
-  profileDescription.textContent = about;
-  closePopup(editPopup);
 }
 
 formEdit.addEventListener('submit', handleformEditSubmit);
@@ -99,6 +101,9 @@ function handleformEditAvatarSubmit(evt) {
   patchAvatr(avatarUrl.value)
   .then((res) => {
     profileAvatar.style['background-image'] = `url(${res.avatar})`;
+    formEditAvatar.reset();
+    clearValidation(formEditAvatar, OPTIONS);
+    closePopup(editAvatarPopup);
   })
   .catch((err) => {
     console.log(err);
@@ -106,9 +111,6 @@ function handleformEditAvatarSubmit(evt) {
   .finally(() => {
     renderLoading(false, popupButon)
   });
-  
-  formEditAvatar.reset();
-  closePopup(editAvatarPopup);
 }
 
 formEditAvatar.addEventListener('submit', handleformEditAvatarSubmit);
@@ -129,21 +131,19 @@ function handleNewCardSubmit(evt) {
   const name = formNewCard.elements['place-name'].value;
   const link = formNewCard.elements['link'].value;
   
-
   postNewCard(name, link)
-  .catch((err) => {
-    console.log(err);
-  })
   .then((res) => {
     placesList.prepend(createCard(res, deleteCard, onLike, res.owner._id));
+    formNewCard.reset();
+    closePopup(newCardPopup);
+    clearValidation(formNewCard, OPTIONS);
+  })
+  .catch((err) => {
+    console.log(err);
   })
   .finally(() => {
     renderLoading(false, popupButon)
   });
-  
-  formNewCard.reset();
-  closePopup(newCardPopup);
-  clearValidation(formNewCard, OPTIONS);
 };
 
 formNewCard.addEventListener('submit', handleNewCardSubmit);
@@ -183,7 +183,7 @@ Promise.all([getInitialCards(), getUserData()])
   profileAvatar.style['background-image'] = `url(${res[1].avatar})`;
 })
 .catch((err) => {
-  console.log(err); // выводим ошибку в консоль
+  console.log(err);
 });
 
 enableValidation(OPTIONS);
